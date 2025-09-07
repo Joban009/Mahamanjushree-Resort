@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gallery>
+    <image id="attached-room">r1.jpg</image>
+    <image id="nonattached-room">room2.1.jpg</image>
+    <image id="others">gumba.jpg</image>
+    <image id="video">r1.3.mp4</image>
+</gallery>

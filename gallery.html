@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gallery</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+<style>
+    .gallery-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+
+    }
+    .gallery-container button{
+        width: fit-content;
+        padding:10px;
+        margin:5px;
+        border: 1px solid gray;
+        border-radius: 5px;
+        background-color: lightgray;
+        cursor: pointer;
+        transition: background-color 0.3s, color 0.3s;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box;
+    }
+#gallery-output{
+        display: flex;  
+        flex-wrap: wrap;
+        height: auto;
+        padding: 10px;
+        width:100dvh;
+    }
+    #gallery-output img, video {
+            max-width: 15dvh;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin: auto;
+            border: 1px solid #ccc;
+            padding:10px;
+            }
+    #gallery-output p {
+        font-size: 1.2em;
+        color: #555;
+        text-align: center;
+        width: 100%;
+        margin-top: 20px;
+        }
+
+</style>
+
+<body class="p-4">
+
+    <div class="gallery-container mb-3">
+        <button class="btn btn-primary me-2" onclick="show_rooms('attached-room')">Attached Room</button>
+        <button class="btn btn-primary me-2" onclick="show_rooms('nonattached-room')">Non-Attached Room</button>
+        <button class="btn btn-primary" onclick="show_rooms('others')">Others</button>
+        <button class="btn btn-primary" onclick="show_rooms('video')">Videos</button>
+    </div>
+
+    <!-- Output container -->
+    <div id="gallery-output" class="mt-3">
+        <p>Select a category to view images or videos.</p>
+    </div>
+
+    <script>
+        function show_rooms(galleryId) {
+            var XHttp = new XMLHttpRequest();
+            XHttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    var parser = new DOMParser();
+                    var xmlDoc = parser.parseFromString(this.responseText, "text/xml");
+                    var rooms = xmlDoc.getElementsByTagName("image");
+                    var output = "";
+
+                    for (var i = 0; i < rooms.length; i++) {
+                        if(galleryId === 'video' && rooms[i].getAttribute("id") === galleryId) {
+                            let videoName = rooms[i].textContent.trim();
+                            output = `<video width="800" height="400" controls autoplay>
+                                        <source src="../assets/rooms/${videoName}" type="video/mp4">
+                                        Your browser does not support the video tag.
+                                      </video>`;
+                        } else
+                        if (galleryId != 'video' && rooms[i].getAttribute("id") === galleryId) {
+                            let imgName = rooms[i].textContent.trim();
+                            // Build the full <img> tag
+                            output = `<img src="../assets/rooms/${imgName}" 
+                             class="d-block w-100"
+                             alt="${galleryId}">`;
+                        }
+                    }
+
+                    document.getElementById("gallery-output").innerHTML = output || "<p>No image found.</p>";
+                }
+            };
+            XHttp.open("GET", "gallery.xml", true);
+            XHttp.send();
+        }
+    </script>
+</body>
+
+</html>
